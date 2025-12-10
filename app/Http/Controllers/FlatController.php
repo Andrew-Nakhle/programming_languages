@@ -1,0 +1,122 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\SearchRequest;
+use App\Http\Requests\UpdateRequest;
+use App\Http\Resources\FlatResource;
+use App\Models\Flat;
+use Illuminate\Http\Request;
+use function PHPUnit\Framework\isEmpty;
+
+class FlatController extends Controller
+{
+    public function createFlat(CreateRequest $request){
+
+        $validated=$request->validated();
+        if (Flat::where('governorate', $validated['governorate'])
+            ->where('city', $validated['city'])
+            ->where('price', $validated['price'])
+            ->where('space', $validated['space'])
+            ->where('has_elevator', $validated['has_elevator'])
+            ->where('rooms', $validated['rooms'])
+            ->where('floor', $validated['floor'])
+            ->where('is_furnished', $validated['is_furnished'])
+            ->where('address', $validated['address'])
+            ->exists()
+
+        ){
+            return response()->json([
+                'message' => 'this flat  already exists'
+            ]);
+        }
+$validated['user_id']=auth()->id();
+       $flat=Flat::create($validated);
+       return response()->json([new FlatResource($flat),201]);
+
+    }
+    //////////////////////////andrew was here///////////////////////////
+    public function showFlatsByUserId(){
+        $user_id=auth()->id();
+        $flats = Flat::where('user_id', $user_id)->get();
+        if($flats->isEmpty()){
+            return response()->json([
+                'message'=>'There are no flats created yet by this user',
+            ]);
+        }
+        return response()->json([FlatResource::collection($flats)],200);
+    }
+    //////////////////////////andrew was here/////////////////////////////////
+    public function showFlatsById($id){
+        $flat =Flat::find($id);
+return response()->json([new FlatResource($flat),'id'=>$id]);
+    }
+    //////////////////////////andrew was here/////////////////////////////
+    public function deleteFlat($id)
+    {
+        $flat = Flat::find($id);
+$user_id = auth()->id();
+        if (!$flat) {
+            return response()->json(['message' => 'Flat not found'], 404);
+        }
+if ($flat->user_id === $user_id) {
+        $flat->delete();
+
+        return response()->json(['message' => 'Flat deleted successfully'], 200);
+    }
+return response()->json(['message' => 'You do not have the authority to delete this flat'], 403);
+    }
+
+    ///////////////////////andrew was here////////////////////////////
+    public function searchFlats(SearchRequest $request){
+        $validated=$request->validated();
+            $query=Flat::query();
+
+
+        if (!empty($validated['city'])) {
+            $query->where('city', $validated['city']);
+        }
+        if (!empty($validated['rooms'])) {
+            $query->where('rooms', $validated['rooms']);
+        }
+        if (!empty($validated['price'])) {
+            $query->where('price', '<=', $validated['price']);
+        }
+        if (!empty($validated['floor'])) {
+            $query->where('floor', $validated['floor']);
+        }
+        if (!empty($validated['space'])) {
+            $query->where('space', $validated['space']);
+        }
+        if (isset($validated['has_elevator'])) {
+            $query->where('has_elevator', $validated['has_elevator']);
+        }
+        if (isset($validated['is_furnished'])) {
+            $query->where('is_furnished', $validated['is_furnished']);
+        }
+        $flats = $query->get();
+        if ($flats->isEmpty()) {
+            return response()->json(['message' => 'Flat not found'], 404);
+        }
+        return response()->json([FlatResource::collection($flats), 200]);
+
+    }
+///////////////////////////////abumajd was here////////////////////////////////
+public function updateFlat($id,UpdateRequest $request){
+        $validated=$request->validated();
+        $flat=Flat::find($id);
+        $user_id = auth()->id();
+        if (!$flat) {
+            return response()->json(['message' => 'Flat not found you cant update it'], 404);
+        }
+        if ($flat->user_id === $user_id) {
+            $flat->update($validated);
+           return response()->json([new FlatResource($flat),201]);
+        }
+        return response()->json(['message' => 'You do not have the authority to update this flat'], 403);
+}
+
+}
