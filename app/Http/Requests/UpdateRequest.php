@@ -25,11 +25,15 @@ class UpdateRequest extends FormRequest
             'governorate'=>['required','string'],
             'city'=>['required','string'],
             'price'=>['required','decimal:0,2'],
+            'address'=>['required','string'],
             'rooms'=>['required','integer','min:1'],
             'space'=>['required','integer','min:1'],
             'has_elevator'=>['required','boolean'],
             'is_furnished'=>['required','boolean'],
             'floor'=>['required','integer','min:1'],
+            'status'=>['required','string','in:available,booked,sold'],
+            'available_date'=>['date'],
+            'flat_image'=>['nullable','image']
         ];
     }
 }

@@ -18,12 +18,15 @@ class FlatResource extends JsonResource
             'id'=>$this->id,
             'governorate'=>$this->governorate,
             'city'=>$this->city,
+            'address'=>$this->address,
             'price'=>$this->price,
-           'rooms'=>$this->rooms,
+            'rooms'=>$this->rooms,
             'space'=>$this->space,
             'floor'=>$this->floor,
             'has_elevator'=>$this->has_elevator,
-            'is_furnished'=>$this->is_furnished
+            'is_furnished'=>$this->is_furnished,
+            'available_date'=>$this->available_date,
+            'flat_image'=>$this->flat_image ? asset('storage/'.$this->flat_image) : null,
 
 
         ];

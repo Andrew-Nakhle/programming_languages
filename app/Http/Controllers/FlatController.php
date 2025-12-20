@@ -17,15 +17,21 @@ class FlatController extends Controller
     public function createFlat(CreateRequest $request){
 
         $validated=$request->validated();
+        if ($request->hasFile('flat_image')) {
+            $validated['flat_image'] = $request->file('flat_image')->store('flats_images', 'public');
+        }
+
         if (Flat::where('governorate', $validated['governorate'])
             ->where('city', $validated['city'])
+            ->where('address', $validated['address'])
             ->where('price', $validated['price'])
             ->where('space', $validated['space'])
             ->where('has_elevator', $validated['has_elevator'])
             ->where('rooms', $validated['rooms'])
             ->where('floor', $validated['floor'])
             ->where('is_furnished', $validated['is_furnished'])
-            ->where('address', $validated['address'])
+            ->where('available_date', $validated['available_date'])
+            ->where('flat_image', $validated['flat_image'])
             ->exists()
 
         ){
@@ -33,6 +39,7 @@ class FlatController extends Controller
                 'message' => 'this flat  already exists'
             ]);
         }
+
 $validated['user_id']=auth()->id();
        $flat=Flat::create($validated);
        return response()->json([new FlatResource($flat),201]);
@@ -52,6 +59,11 @@ $validated['user_id']=auth()->id();
     //////////////////////////andrew was here/////////////////////////////////
     public function showFlatsById($id){
         $flat =Flat::find($id);
+        if(!$flat){
+            return response()->json([
+                'message'=>'this flat does not exist'
+            ]);
+        }
 return response()->json([new FlatResource($flat),'id'=>$id]);
     }
     //////////////////////////andrew was here/////////////////////////////
@@ -82,8 +94,11 @@ return response()->json(['message' => 'You do not have the authority to delete t
         if (!empty($validated['rooms'])) {
             $query->where('rooms', $validated['rooms']);
         }
+        if (!empty($validated['address'])) {
+            $query->where('address', $validated['address']);
+        }
         if (!empty($validated['price'])) {
-            $query->where('price', '<=', $validated['price']);
+            $query->where('price', '<=', (float)$validated['price']);
         }
         if (!empty($validated['floor'])) {
             $query->where('floor', $validated['floor']);
@@ -97,6 +112,7 @@ return response()->json(['message' => 'You do not have the authority to delete t
         if (isset($validated['is_furnished'])) {
             $query->where('is_furnished', $validated['is_furnished']);
         }
+
         $flats = $query->get();
         if ($flats->isEmpty()) {
             return response()->json(['message' => 'Flat not found'], 404);

@@ -24,7 +24,8 @@ class SearchRequest extends FormRequest
         return [
             'governorate'=>['nullable','string'],
             'city'=>['nullable','string'],
-            'price'=>['nullable','decimal:0,2'],
+            'price'=>['nullable','numeric'],
+            'address'=>['nullable','string'],
             'rooms'=>['nullable','integer','min:1'],
             'space'=>['nullable','integer','min:1','max:350'],
             'has_elevator'=>['nullable','boolean'],

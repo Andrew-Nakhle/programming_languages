@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('avatar_path')->nullable();
             $table->date('birth_date');
             $table->string('id_card_path')->nullable();
+            $table->boolean('is_approved')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

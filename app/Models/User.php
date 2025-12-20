@@ -18,6 +18,14 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var list<string>
      */
+    public function flats()
+    {
+return $this->hasMany(Flat::class);
+    }
+    public function reservations ()
+    {
+        return $this->hasMany(Reservation::class);
+    }
     protected $fillable = [
         'first_name',
         'last_name',
