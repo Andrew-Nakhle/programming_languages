@@ -143,6 +143,31 @@ return response()->json([new ReservationResource($reservation)]);
         }
 
         $reservation->update($validated);
+        $reservation->status='pending';
+        $reservation->save();
         return response()->json([new  UpdateReservationResource($reservation)]);
+    }
+    public function CancelReservation($id){
+        $reservation=Reservation::find($id);
+        $userId=auth()->id();
+
+        if(!$reservation){
+
+            return response()->json([
+                'message'=>'Reservation not found'
+            ]);
+
+        }
+        if($reservation->user_id!==$userId){
+            return response()->json([
+                'message'=>'You do not have the authority to cancel this booking.'
+            ]);
+        }
+        $reservation->status='cancelled';
+        $reservation->save();
+        return response()->json([
+            'message'=>'Reservation cancelled successfully'
+        ]);
+
     }
 }

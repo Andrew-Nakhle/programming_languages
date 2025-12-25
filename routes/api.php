@@ -35,5 +35,6 @@ Route::group(['middleware' => ['api']], function () {
 Route::group(['middleware' => ['api']], function () {
     Route::post('/createReservation', [ReservationController::class, 'create'])->middleware('auth:api');
     Route::put('/updateReservation', [ReservationController::class, 'update'])->middleware('auth:api');
+    Route::get('/cancelReservation/{id}', [ReservationController::class, 'cancelReservation'])->middleware('auth:api');
 });
 
