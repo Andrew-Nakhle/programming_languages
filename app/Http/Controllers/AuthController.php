@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\LoginResource;
 
 use App\Http\Resources\RegisterResource;
+use App\Http\Resources\UpdateUserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -29,7 +31,9 @@ $user=User::create($validated,201);
 //
 //    $user->save();
 $user_token=auth()->login($user);
-return response()->json([new RegisterResource($user),'token'=>$user_token,'expires_in'=>auth()->factory()->getTTL() * 60]);
+return response()->json([new RegisterResource($user),'token'=>$user_token
+    ,'expires_in'=>auth()->factory()->getTTL() * 60
+]);
 
 }
 ///////////////////andrew was here///////////////////////////
@@ -49,8 +53,7 @@ public function login(LoginRequest $request){
   }
   $token=auth()->login($user);
   return response()->json([new LoginResource($user),
-      'token'=>$token,
-      'expires_in'=>auth()->factory()->getTTL() * 60
+      'token'=>$token, 'expires_in'=>auth()->factory()->getTTL() * 60
   ]);
 
 
@@ -64,11 +67,38 @@ public function logout(){
 }
 /////////////////////////////andrew was here//////////////////////////////////
 public function refresh(){
-return response()->json(['token'=>auth()->refresh(),
-    'expires_in'=>auth()->factory()->getTTL() * 60]);
+return response()->json(['token'=>auth()->refresh(), 'expires_in'=>auth()->factory()->getTTL() * 60
+]);
 }
 public function me(){
-    return response()->json(auth()->user());//show me curent user informations//andrew//
+$user = auth()->user();
+$user['avatar_path']=$user->avatar_path ?asset('storage/'.$user->avatar_path) :null;
+$user['id_card_path']=$user->id_card_path ? asset('storage/'.$user->id_card_path) :null;
+    return response()->json($user);//show me curent user informations//andrew//
 
+}
+public function update(UpdateUserRequest $request){
+    $validated = $request->validated();
+
+    $id=auth()->id();
+    $user=User::find($id);
+    if(!$user) {
+        return response()->json([
+            'message' => 'user not found'
+        ]);
+    }
+    if ($request->hasFile('avatar_path')) {
+        $validated['avatar_path']=$request->file('avatar_path')->store('avatars', 'public');
+    }
+    if($request->hasFile('id_card_path')){
+        $validated['id_card_path'] = $request->file('id_card_path')->store('id_cards', 'public');
+    }
+    $validated['phone']=$user['phone'];
+    $user->update($validated);
+    return response()->json([
+        'message' => 'user updated successfully',
+        'user'=>new UpdateUserResource($user)
+
+    ]);
 }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,11 @@ class RegisterRequest extends FormRequest
         return [
             'first_name'=>['required','string'],
             'last_name'=>['required','string'],
-            'phone'=>['required','string','unique:users,phone','regex:/^\+?[0-9]{9,15}$/'],// 'regex:/^(\+9639\d{8}|09\d{8})$/'
-            'password'=>['required','string','confirmed','min:8'],
+            'birth_date'=>['required','date','before_or_equal:' . now()->subYears(16)->toDateString()],
+            'gender'=>['nullable','string','in:male,female,other'],
             'avatar_path'=>['image','max:10240'],
             'id_card_path'=>['image','max:10240'],
-            'birth_date'=>['required','date','before_or_equal:' . now()->subYears(16)->toDateString()],
+            'country'=>['nullable','string'],
         ];
     }
 }

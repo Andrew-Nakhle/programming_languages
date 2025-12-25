@@ -122,15 +122,21 @@ return response()->json(['message' => 'You do not have the authority to delete t
     }
 ///////////////////////////////abumajd was here////////////////////////////////
 public function updateFlat($id,UpdateRequest $request){
-        $validated=$request->validated();
+
+
+    $validated=$request->validated();
+
         $flat=Flat::find($id);
         $user_id = auth()->id();
+    if ($request->hasFile('flat_image')) {
+        $validated['flat_image'] = $request->file('flat_image')->store('flats_images', 'public');
+    }
         if (!$flat) {
             return response()->json(['message' => 'Flat not found you cant update it'], 404);
         }
         if ($flat->user_id === $user_id) {
             $flat->update($validated);
-           return response()->json([new FlatResource($flat),201]);
+           return response()->json([new FlatResource($flat),'status'=>$validated['status'],201]);
         }
         return response()->json(['message' => 'You do not have the authority to update this flat'], 403);
 }

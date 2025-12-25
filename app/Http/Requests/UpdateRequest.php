@@ -32,7 +32,7 @@ class UpdateRequest extends FormRequest
             'is_furnished'=>['required','boolean'],
             'floor'=>['required','integer','min:1'],
             'status'=>['required','string','in:available,booked,sold'],
-            'available_date'=>['date'],
+            'available_date'=>['nullable','date','after:today'],
             'flat_image'=>['nullable','image']
         ];
     }

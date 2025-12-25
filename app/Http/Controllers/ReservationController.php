@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateReservationRequest;
+use App\Http\Requests\UpdateReservationRequest;
 use App\Http\Resources\ReservationResource;
+use App\Http\Resources\UpdateReservationResource;
 use App\Models\Flat;
 use App\Models\Reservation;
 use Carbon\Carbon;
@@ -48,13 +50,99 @@ class ReservationController extends Controller
         $end   = Carbon::parse($validated['end_time']);
 
         $diffInDays = $start->diffInDays($end);
+
+        if($diffInDays >= 30) {
+            $validated['price'] = $validated['price'] * ($diffInDays - 2);
+        }
+        if($diffInDays >= 180){
+            $validated['price']=$validated['price'] * ($diffInDays-10);
+        }
         if($diffInDays >= 365){
+
+            $validated['price']=$validated['price'] * ($diffInDays-30);
             $flat->status='booked';
             $flat->save();
         }
+        $validated['price']=$validated['price']*$diffInDays;
+
         $validated['user_id']=auth()->id();
         $validated['status'] = $validated['status'] ?? 'pending';//ليش عملت هيك لان القيمة رح ترجع لتبع الفلاتر null بس انا بدي ياها ترجع pending لان انا بال validation ماني جابرو يدخل قيمة فلهيك رح يرجع null
 $reservation=Reservation::create($validated);
 return response()->json([new ReservationResource($reservation)]);
+    }
+
+    /////////////////////////////andrew was here ////////////////////////////
+    public function update( UpdateReservationRequest $request){
+        $validated = $request->validated();
+        $reservation=Reservation::find($validated['id']);
+        if(!$reservation){
+            return response()->json([
+                'message'=>'Reservation not found'
+            ],404);
+        }
+
+        $flat=Flat::with('reservations')->find($reservation['flat_id']);
+
+
+
+            $conflict = $flat->reservations()
+                ->where('id','!=',$reservation->id)->
+            where(function ($query) use ($validated) {
+                $query->wherebetween('start_time', [$validated['start_time'], $validated['end_time']])
+                    ->orwherebetween('end_time', [$validated['start_time'], $validated['end_time']])
+                    ->orwhere(function ($query1) use ($validated) {
+                        $query1->where('start_time', '<=', $validated['end_time'])
+                            ->where('end_time', '>=', $validated['start_time']);
+                    })
+                    ->orwhere(function ($query1) use ($validated) {
+                        $query1->where('start_time', '>=', $validated['start_time'])
+                            ->where('end_time', '<=', $validated['end_time']);
+                    });
+
+            })->exists();
+
+
+
+        if ($conflict) {
+            return response()->json([
+                'message' => 'This flat is already reserved during the selected time.'
+            ], 400);
+        }
+
+//        if(!$reservation){
+//            return response()->json([
+//                'message'=>'reservation not found'
+//            ],404);
+//        }
+//        $flat=$reservation->flat;
+//    if ($validated['start_time'] <= $flat->available_date) {
+//        return response()->json([
+//            'message'=>'Start time must be after or equal to flat available_date.'
+//        ],422);
+//    }
+//    if($validated['end_time'] <= $flat->available_date){
+//        return response()->json([
+//            'message'=>'End time must be after or equal to flat available_date.'
+//        ],422);//422 الطلب صحيح بس البيانات مابيمشي حالها
+//    }
+        $start = Carbon::parse($validated['start_time']);
+        $end   = Carbon::parse($validated['end_time']);
+        $diffInDays = $start->diffInDays($end);
+        $validated['price']=  $flat['price']*$diffInDays;
+        if($diffInDays >= 30) {
+            $validated['price'] = $flat['price'] * ($diffInDays - 2);
+        }
+        if($diffInDays >= 180){
+            $validated['price']=$flat['price'] * ($diffInDays-10);
+        }
+        if($diffInDays >= 365){
+
+            $validated['price']=$flat['price'] * ($diffInDays-30);
+            $flat->status='booked';
+            $flat->save();
+        }
+
+        $reservation->update($validated);
+        return response()->json([new  UpdateReservationResource($reservation)]);
     }
 }

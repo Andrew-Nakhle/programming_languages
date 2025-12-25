@@ -22,8 +22,11 @@ return new class extends Migration
             $table->date('birth_date');
             $table->string('id_card_path')->nullable();
             $table->boolean('is_approved')->default(false);
+            $table->string('gender')->nullable();
+            $table->string('country')->nullable();
             $table->rememberToken();
             $table->timestamps();
+
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

@@ -33,7 +33,9 @@ return $this->hasMany(Flat::class);
         'password',
         'birth_date',
         'id_card_path',
-        'avatar_path'
+        'avatar_path',
+        'country',
+        'gender',
     ];
 
     /**

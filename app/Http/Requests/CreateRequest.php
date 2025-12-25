@@ -31,7 +31,7 @@ class CreateRequest extends FormRequest
             'has_elevator'=>['required','boolean'],
             'is_furnished'=>['required','boolean'],
             'floor'=>['required','integer','min:1'],
-            'available_date'=>['nullable','date'],
+            'available_date'=>['nullable','date','after:today'],
             'flat_image'=>['required','image']
         ];
     }

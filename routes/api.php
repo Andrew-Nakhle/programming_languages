@@ -11,6 +11,8 @@ Route::group(['middleware' => 'api',
     Route::post('/logout',[AuthController::class,'logout'])->middleware('auth:api');
     Route::get('/me',[AuthController::class,'me'])->middleware('auth:api');
     Route::post('/refresh',[AuthController::class,'refresh'])->middleware('auth:api');
+    Route::post('/update',[AuthController::class,'update'])->middleware('auth:api');
+    Route::put('/update',[AuthController::class,'update'])->middleware('auth:api');
 });
 //Route::group(['middleware' => 'api',],
 //Route::post('/createFlat', [FlatController::class, 'createFlat'])->middleware('auth:api');;
@@ -26,9 +28,12 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('/searchFlats', [FlatController::class, 'searchFlats'])->middleware('auth:api');
     Route::get('/showFlatsByUserId', [FlatController::class, 'showFlatsByUserId'])->middleware('auth:api');
     Route::delete('/deleteFlat/{id}', [FlatController::class, 'deleteFlat'])->middleware('auth:api');
-    Route::put('/updateFlat/{id}', [FlatController::class, 'updateFlat'])->middleware('auth:api');
+    Route::post('/updateFlat/{id}', [FlatController::class, 'updateFlat'])->middleware('auth:api');
+    Route::put('/updateFlat/{id}', [FlatController::class, 'updateFlat'])->middleware('auth:api');;
+
 });
 Route::group(['middleware' => ['api']], function () {
     Route::post('/createReservation', [ReservationController::class, 'create'])->middleware('auth:api');
+    Route::put('/updateReservation', [ReservationController::class, 'update'])->middleware('auth:api');
 });
 
