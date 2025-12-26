@@ -9,6 +9,7 @@ use App\Http\Resources\ReservationResource;
 use App\Http\Resources\UpdateReservationResource;
 use App\Models\Flat;
 use App\Models\Reservation;
+use App\Models\User;
 use Carbon\Carbon;
 use http\Env\Response;
 use Illuminate\Http\Request;
@@ -169,5 +170,12 @@ return response()->json([new ReservationResource($reservation)]);
             'message'=>'Reservation cancelled successfully'
         ]);
 
+    }
+    /////////////////////////andrew was here ////////////////////////////////////
+
+    public function showReservation(){
+        $userId=auth()->id();
+$user=User::with('reservations')->find($userId);
+return response()->json([ReservationResource::collection($user->reservations)]);
     }
 }

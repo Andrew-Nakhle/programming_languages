@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FlatRatingController;
 use App\Http\Controllers\ReservationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -14,14 +15,7 @@ Route::group(['middleware' => 'api',
     Route::post('/update',[AuthController::class,'update'])->middleware('auth:api');
     Route::put('/update',[AuthController::class,'update'])->middleware('auth:api');
 });
-//Route::group(['middleware' => 'api',],
-//Route::post('/createFlat', [FlatController::class, 'createFlat'])->middleware('auth:api');;
-//Route::get('/showFlatById/{id}', [FlatController::class, 'showFlatsById'])->middleware('auth:api');;
-//Route::post('/searchFlats', [FlatController::class, 'searchFlats'])->middleware('auth:api');
-//Route::get('/showFlatsByUserId', [FlatController::class, 'showFlatsByUserId'])->middleware('auth:api');
-//Route::delete('/deleteFlat/{id}', [FlatController::class, 'deleteFlat'])->middleware('auth:api');
-//Route::put('/updateFlat/{id}', [FlatController::class, 'updateFlat'])->middleware('auth:api');
-//)
+
 Route::group(['middleware' => ['api']], function () {
     Route::post('/createFlat', [FlatController::class, 'createFlat'])->middleware('auth:api');
     Route::get('/showFlatById/{id}', [FlatController::class, 'showFlatsById'])->middleware('auth:api');
@@ -30,11 +24,15 @@ Route::group(['middleware' => ['api']], function () {
     Route::delete('/deleteFlat/{id}', [FlatController::class, 'deleteFlat'])->middleware('auth:api');
     Route::post('/updateFlat/{id}', [FlatController::class, 'updateFlat'])->middleware('auth:api');
     Route::put('/updateFlat/{id}', [FlatController::class, 'updateFlat'])->middleware('auth:api');;
+    Route::post('/flatRating/{id}', [FlatRatingController::class, 'createFlatRating'])->middleware('auth:api');
+    Route::get('/showAvgRating/{id}', [FlatRatingController::class, 'avgRating'])->middleware('auth:api');
 
 });
 Route::group(['middleware' => ['api']], function () {
     Route::post('/createReservation', [ReservationController::class, 'create'])->middleware('auth:api');
     Route::put('/updateReservation', [ReservationController::class, 'update'])->middleware('auth:api');
     Route::get('/cancelReservation/{id}', [ReservationController::class, 'cancelReservation'])->middleware('auth:api');
+    Route::get('/showReservation',[ReservationController::class, 'showReservation'])->middleware('auth:api');
+
 });
 

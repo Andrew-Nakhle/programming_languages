@@ -13,7 +13,9 @@ public function user()
 public function reservations(){
     return $this->hasMany(Reservation::class);
 }
-
+public function ratings(){
+    return $this->hasMany(FlatRating::class);
+}
     protected $fillable = [
         'governorate', 'city', 'price', 'rooms', 'space',
         'floor', 'has_elevator', 'is_furnished', 'user_id', 'status', 'address', 'available_date','flat_image'

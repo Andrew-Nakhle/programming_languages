@@ -22,9 +22,13 @@ class User extends Authenticatable implements JWTSubject
     {
 return $this->hasMany(Flat::class);
     }
-    public function reservations ()
+    public function reservations()
     {
         return $this->hasMany(Reservation::class);
+    }
+    public function ratings()
+    {
+        return $this->hasMany(FlatRating::class);
     }
     protected $fillable = [
         'first_name',
