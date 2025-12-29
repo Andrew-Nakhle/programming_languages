@@ -21,9 +21,12 @@ return new class extends Migration
             $table->string('avatar_path')->nullable();
             $table->date('birth_date');
             $table->string('id_card_path')->nullable();
-            $table->boolean('is_approved')->default(false);
+            $table->boolean('is_admin')->default(false);
+            $table->string('status')->default('pending');//pending/rejected/aproved
+//            $table->boolean('is_approved')->default(false);
             $table->string('gender')->nullable();
             $table->string('country')->nullable();
+
             $table->rememberToken();
             $table->timestamps();
 

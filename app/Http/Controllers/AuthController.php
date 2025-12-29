@@ -31,8 +31,9 @@ $user=User::create($validated,201);
 //
 //    $user->save();
 $user_token=auth()->login($user);
-return response()->json([new RegisterResource($user),'token'=>$user_token
-    ,'expires_in'=>auth()->factory()->getTTL() * 60
+return response()->json([new RegisterResource($user)
+//    'token'=>$user_token
+//    ,'expires_in'=>auth()->factory()->getTTL() * 60
 ]);
 
 }
@@ -45,19 +46,32 @@ public function login(LoginRequest $request){
           'message' => 'please enter valid phone number'
       ], 404);
   }
-  if(!Hash::check($validated['password'],$user->password)){
-      return response()->json([
-          'message' => 'invalid password'
-      ], 401);
+      if($user->status==='pending') {
+          return response()->json([
+              'message' => 'Your account is pending until approval'
+          ]);
+      }
+      if($user->status==='rejected') {
+          return response()->json([
+              'message' => 'Your account is rejected by admin'
+          ],403);
+      }
 
-  }
-  $token=auth()->login($user);
-  return response()->json([new LoginResource($user),
-      'token'=>$token, 'expires_in'=>auth()->factory()->getTTL() * 60
-  ]);
 
 
-}
+          if (!Hash::check($validated['password'], $user->password)) {
+              return response()->json([
+                  'message' => 'invalid password'
+              ], 401);
+
+          }
+          $token = auth()->login($user);
+          return response()->json([new LoginResource($user),
+              'token' => $token, 'expires_in' => auth()->factory()->getTTL() * 60
+          ]);
+
+      }
+
 ////////////////////////////////////
 public function logout(){
     auth()->logout();

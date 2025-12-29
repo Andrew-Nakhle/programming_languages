@@ -18,6 +18,11 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var list<string>
      */
+    public function isAdmin()
+    {
+        return $this->is_admin;
+    }
+
     public function flats()
     {
 return $this->hasMany(Flat::class);
@@ -40,6 +45,8 @@ return $this->hasMany(Flat::class);
         'avatar_path',
         'country',
         'gender',
+        'is_admin',
+        'status',
     ];
 
     /**

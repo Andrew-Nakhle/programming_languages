@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\FlatRatingController;
 use App\Http\Controllers\ReservationController;
 use Illuminate\Support\Facades\Route;
@@ -34,5 +35,9 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('/cancelReservation/{id}', [ReservationController::class, 'cancelReservation'])->middleware('auth:api');
     Route::get('/showReservation',[ReservationController::class, 'showReservation'])->middleware('auth:api');
 
+});
+Route::group(['middleware'=>['api',]],function(){
+    Route::put('approve/{id}',[AdminController::class, 'approveUser'])->middleware('auth:api','admin');
+    Route::put('reject/{id}',[AdminController::class, 'rejectUser'])->middleware('auth:api','admin');
 });
 
