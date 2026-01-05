@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Reservation;
 
 use App\Models\Flat;
 use App\Models\Reservation;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Flat;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -31,9 +31,10 @@ class UpdateRequest extends FormRequest
             'has_elevator'=>['required','boolean'],
             'is_furnished'=>['required','boolean'],
             'floor'=>['required','integer','min:1'],
-            'status'=>['required','string','in:available,booked,sold'],
+            'status'=>['required','string','in:available,booked,sold,Available,Booked,Sold'],
             'available_date'=>['nullable','date','after:today'],
-            'flat_image'=>['nullable','image']
+            'flat_image'=>['nullable','image'],
+            'section'=>['required','string','in:luxury,standard,bed,Luxury,Standard,Bed'],
         ];
     }
 }

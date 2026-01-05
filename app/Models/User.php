@@ -35,6 +35,12 @@ return $this->hasMany(Flat::class);
     {
         return $this->hasMany(FlatRating::class);
     }
+    public function generate_otp_code(){
+        $this->timestamps = false;
+        $this->otp_code=rand(10000,99999);
+        $this->otp_expired_at=now()->addMinutes(70);
+        $this->save();
+    }
     protected $fillable = [
         'first_name',
         'last_name',
@@ -47,6 +53,8 @@ return $this->hasMany(Flat::class);
         'gender',
         'is_admin',
         'status',
+        'otp_expired_at',
+        'otp_code'
     ];
 
     /**

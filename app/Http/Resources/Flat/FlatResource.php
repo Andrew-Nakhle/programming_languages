@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Flat;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -26,7 +26,8 @@ class FlatResource extends JsonResource
             'has_elevator'=>$this->has_elevator,
             'is_furnished'=>$this->is_furnished,
             'available_date'=>$this->available_date,
-            'flat_image'=>$this->flat_image ? asset('storage/'.$this->flat_image) : null,
+            'flat_image'=>$this->flat_image ? url('storage/'.$this->flat_image) : null,
+            'section'=>$this->section
 
 
         ];

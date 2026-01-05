@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateRequest;
-use App\Http\Requests\RegisterRequest;
-use App\Http\Requests\SearchRequest;
-use App\Http\Requests\UpdateRequest;
-use App\Http\Resources\FlatResource;
+use App\Http\Requests\Flat\CreateRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Flat\SearchRequest;
+use App\Http\Requests\Flat\UpdateRequest;
+use App\Http\Resources\Flat\FlatResource;
 use App\Models\Flat;
 use Illuminate\Http\Request;
 use function PHPUnit\Framework\isEmpty;
@@ -24,6 +24,7 @@ class FlatController extends Controller
         if (Flat::where('governorate', $validated['governorate'])
             ->where('city', $validated['city'])
             ->where('address', $validated['address'])
+            ->where('section', $validated['section'])
             ->where('price', $validated['price'])
             ->where('space', $validated['space'])
             ->where('has_elevator', $validated['has_elevator'])
@@ -42,7 +43,7 @@ class FlatController extends Controller
 
 $validated['user_id']=auth()->id();
        $flat=Flat::create($validated);
-       return response()->json([new FlatResource($flat),201]);
+       return response()->json(new FlatResource($flat),201);
 
     }
     //////////////////////////andrew was here///////////////////////////
@@ -54,7 +55,10 @@ $validated['user_id']=auth()->id();
                 'message'=>'There are no flats created yet by this user',
             ]);
         }
-        return response()->json([FlatResource::collection($flats)],200);
+        return response()->json(FlatResource::collection($flats),200);
+        //في طريقة تانية بس انا ماكنت عامل الشو اسمو العلاقات وقتها بتعمل هيك
+        //$user=User::with('flats')->find($user_id);
+        //$flats=$user->flats();
     }
     //////////////////////////andrew was here/////////////////////////////////
     public function showFlatsById($id){
@@ -64,7 +68,7 @@ $validated['user_id']=auth()->id();
                 'message'=>'this flat does not exist'
             ]);
         }
-return response()->json([new FlatResource($flat),'id'=>$id]);
+return response()->json(['flat'=>new FlatResource($flat),'id'=>$id]);
     }
     //////////////////////////andrew was here/////////////////////////////
     public function deleteFlat($id)
@@ -94,6 +98,9 @@ return response()->json(['message' => 'You do not have the authority to delete t
         if (!empty($validated['rooms'])) {
             $query->where('rooms', $validated['rooms']);
         }
+        if (!empty($validated['section'])) {
+            $query->where('section', $validated['section']);
+        }
         if (!empty($validated['address'])) {
             $query->where('address', $validated['address']);
         }
@@ -117,7 +124,7 @@ return response()->json(['message' => 'You do not have the authority to delete t
         if ($flats->isEmpty()) {
             return response()->json(['message' => 'Flat not found'], 404);
         }
-        return response()->json([FlatResource::collection($flats), 200]);
+        return response()->json(FlatResource::collection($flats),200);
 
     }
 ///////////////////////////////abumajd was here////////////////////////////////
@@ -136,7 +143,7 @@ public function updateFlat($id,UpdateRequest $request){
         }
         if ($flat->user_id === $user_id) {
             $flat->update($validated);
-           return response()->json([new FlatResource($flat),'status'=>$validated['status'],201]);
+           return response()->json(['flat'=>new FlatResource($flat),'status'=>$validated['status']],201);
         }
         return response()->json(['message' => 'You do not have the authority to update this flat'], 403);
 }

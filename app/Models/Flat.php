@@ -18,7 +18,7 @@ public function ratings(){
 }
     protected $fillable = [
         'governorate', 'city', 'price', 'rooms', 'space',
-        'floor', 'has_elevator', 'is_furnished', 'user_id', 'status', 'address', 'available_date','flat_image'
+        'floor', 'has_elevator', 'is_furnished', 'user_id', 'status', 'address', 'available_date','flat_image','section'
     ];
 
 }

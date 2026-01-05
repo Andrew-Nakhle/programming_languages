@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Flat;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -31,6 +31,7 @@ class SearchRequest extends FormRequest
             'has_elevator'=>['nullable','boolean'],
             'is_furnished'=>['nullable','boolean'],
             'floor'=>['nullable','integer','min:1','max:163'],
+            'section'=>['nullable','string','in:luxury,standard,bed,Luxury,Standard,Bed'],
         ];
     }
 }

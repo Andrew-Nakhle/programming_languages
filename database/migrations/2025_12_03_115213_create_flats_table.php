@@ -22,6 +22,7 @@ return new class extends Migration
             //on delete: mean when the user deleted all the flats will be deleting
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
+            $table->string('section');
             $table->string('status')->default('available'); // available, booked,sold
             $table->text('address');
             $table->string('flat_image')->nullable();

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FlatRatingRequest;
+use App\Http\Requests\Flat\FlatRatingRequest;
 use App\Models\Flat;
 use App\Models\flatRating;
 use Illuminate\Http\Request;

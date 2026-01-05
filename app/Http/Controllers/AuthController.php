@@ -3,16 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\RegisterRequest;
-use App\Http\Requests\UpdateUserRequest;
-use App\Http\Resources\LoginResource;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\UpdateUserRequest;
+use App\Http\Resources\Auth\LoginResource;
 
-use App\Http\Resources\RegisterResource;
-use App\Http\Resources\UpdateUserResource;
+use App\Http\Resources\Auth\RegisterResource;
+use App\Http\Resources\Auth\UpdateUserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
@@ -26,12 +27,14 @@ public function register(RegisterRequest $request){
         $validated['id_card_path'] = $request->file('id_card_path')->store('id_cards', 'public');
     }
     $validated['password'] = Hash::make($validated['password']);
-$user=User::create($validated,201);
+$user=User::create($validated);
 //$user->password=Hash::make($validated['password']);
 //
 //    $user->save();
 $user_token=auth()->login($user);
-return response()->json([new RegisterResource($user)
+return response()->json([
+    'message' => 'wait until admin approve your account',
+//    new RegisterResource($user)
 //    'token'=>$user_token
 //    ,'expires_in'=>auth()->factory()->getTTL() * 60
 ]);
@@ -65,8 +68,31 @@ public function login(LoginRequest $request){
               ], 401);
 
           }
+    $user->generate_otp_code();
+
+//          $message='login otp is '.$user->otp_code;
+//    $response = Http::withBasicAuth(
+//        env('COMMPEAK_USERNAME'),
+//        env('COMMPEAK_PASSWORD')
+//    )->post(env('COMMPEAK_API_URL'), [
+//        'to'   => '+963'.$user->phone,
+//        'from' => env('COMMPEAK_SENDER_ID'),
+//        'text' => $message,
+//    ]);
+//    $response = Http::withHeaders([
+//        'Authorization' => 'Bearer ' . env('COMMPEAK_API_TOKEN'),
+//    ])->post(env('COMMPEAK_API_URL'), [
+//        'to'   => '+963'.$user->phone,
+//        'from' => env('COMMPEAK_SENDER_ID'),
+//        'text' =>$message,
+//    ]);
+
+
+
+
+
           $token = auth()->login($user);
-          return response()->json([new LoginResource($user),
+          return response()->json(['user'=>new LoginResource($user),
               'token' => $token, 'expires_in' => auth()->factory()->getTTL() * 60
           ]);
 
@@ -82,13 +108,13 @@ public function logout(){
 /////////////////////////////andrew was here//////////////////////////////////
 public function refresh(){
 return response()->json(['token'=>auth()->refresh(), 'expires_in'=>auth()->factory()->getTTL() * 60
-]);
+],200);
 }
 public function me(){
 $user = auth()->user();
-$user['avatar_path']=$user->avatar_path ?asset('storage/'.$user->avatar_path) :null;
-$user['id_card_path']=$user->id_card_path ? asset('storage/'.$user->id_card_path) :null;
-    return response()->json($user);//show me curent user informations//andrew//
+$user['avatar_path']=$user->avatar_path ?url('storage/'.$user->avatar_path) :null;
+$user['id_card_path']=$user->id_card_path ? url('storage/'.$user->id_card_path) :null;
+    return response()->json($user,200);//show me curent user informations//andrew//
 
 }
 public function update(UpdateUserRequest $request){

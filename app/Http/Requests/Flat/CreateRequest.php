@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Flat;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -32,7 +32,8 @@ class CreateRequest extends FormRequest
             'is_furnished'=>['required','boolean'],
             'floor'=>['required','integer','min:1'],
             'available_date'=>['nullable','date','after:today'],
-            'flat_image'=>['required','image']
+            'flat_image'=>['required','image'],
+            'section'=>['required','string','in:luxury,standard,bed,Luxury,Standard,Bed'],
         ];
     }
 }

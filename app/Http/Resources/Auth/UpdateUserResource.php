@@ -1,7 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
-
+namespace App\Http\Resources\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,8 +19,8 @@ class UpdateUserResource extends JsonResource
             'birth_date'=>$this->birth_date,
             'phone'=>$this->phone,
             'gender'=>$this->gender,
-            'avatar_path'=>$this->avatar_path ? asset('storage/'.$this->avatar_path) : null,
-            'id_card_path'=>$this->id_card_path ?asset('storage/'.$this->id_card_path) : null,
+            'avatar_path'=>$this->avatar_path ? url('storage/'.$this->avatar_path) : null,
+            'id_card_path'=>$this->id_card_path ?url('storage/'.$this->id_card_path) : null,
             'country'=>$this->country
         ];
 

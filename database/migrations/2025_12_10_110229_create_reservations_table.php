@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('flat_id')->constrained('flats')->onDelete('cascade');
             $table->decimal('price',8,2);
-            $table->string('status')->default('pending'); // pending, confirmed, cancelled
+            $table->string('status')->default('pending'); // pending, approved, cancelled,rejected
 
             $table->timestamps();
         });

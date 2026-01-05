@@ -22,7 +22,9 @@ return new class extends Migration
             $table->date('birth_date');
             $table->string('id_card_path')->nullable();
             $table->boolean('is_admin')->default(false);
-            $table->string('status')->default('pending');//pending/rejected/aproved
+            $table->string('status')->default('pending');//pending/rejected/approved
+            $table->string('otp_code')->nullable();
+            $table->dateTime('otp_expired_at')->nullable();
 //            $table->boolean('is_approved')->default(false);
             $table->string('gender')->nullable();
             $table->string('country')->nullable();

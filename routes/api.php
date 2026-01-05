@@ -32,12 +32,17 @@ Route::group(['middleware' => ['api']], function () {
 Route::group(['middleware' => ['api']], function () {
     Route::post('/createReservation', [ReservationController::class, 'create'])->middleware('auth:api');
     Route::put('/updateReservation', [ReservationController::class, 'update'])->middleware('auth:api');
-    Route::get('/cancelReservation/{id}', [ReservationController::class, 'cancelReservation'])->middleware('auth:api');
+    Route::patch('/cancelReservation/{id}', [ReservationController::class, 'cancelReservation'])->middleware('auth:api');
     Route::get('/showReservation',[ReservationController::class, 'showReservation'])->middleware('auth:api');
 
 });
-Route::group(['middleware'=>['api',]],function(){
-    Route::put('approve/{id}',[AdminController::class, 'approveUser'])->middleware('auth:api','admin');
-    Route::put('reject/{id}',[AdminController::class, 'rejectUser'])->middleware('auth:api','admin');
+Route::group(['middleware'=>['api']],function(){
+    Route::patch('approve/{id}',[AdminController::class, 'approveUser'])->middleware('auth:api','admin');
+    Route::patch('reject/{id}',[AdminController::class, 'rejectUser'])->middleware('auth:api','admin');
+    Route::get('showUsers',[AdminController::class, 'showUsers'])->middleware('auth:api','admin');
+});
+Route::group(['middleware' => ['api']], function () {
+    Route::patch('approveReservation/{id}', [ReservationController::class, 'approveReservation'])->middleware('auth:api');
+    Route::patch('rejectReservation/{id}', [ReservationController::class, 'rejectReservation'])->middleware('auth:api');
 });
 
