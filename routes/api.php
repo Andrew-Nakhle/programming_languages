@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\FlatRatingController;
 use App\Http\Controllers\ReservationController;
 use Illuminate\Support\Facades\Route;
@@ -45,4 +46,9 @@ Route::group(['middleware' => ['api']], function () {
     Route::patch('approveReservation/{id}', [ReservationController::class, 'approveReservation'])->middleware('auth:api');
     Route::patch('rejectReservation/{id}', [ReservationController::class, 'rejectReservation'])->middleware('auth:api');
 });
+Route::group(['middleware' => ['api']], function () {
+    Route::post('addFavorite/{id}',[favoriteController::class, 'addToFavorite'])->middleware('auth:api');
 
+    Route::delete('removeFavorite/{id}',[favoriteController::class, 'removeFromFavorite'])->middleware('auth:api');
+    Route::get('showFavorite',[favoriteController::class, 'showFavorites'])->middleware('auth:api');
+});

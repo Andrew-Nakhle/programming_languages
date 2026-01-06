@@ -35,6 +35,10 @@ return $this->hasMany(Flat::class);
     {
         return $this->hasMany(FlatRating::class);
     }
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
     public function generate_otp_code(){
         $this->timestamps = false;
         $this->otp_code=rand(10000,99999);
