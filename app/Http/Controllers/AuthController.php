@@ -68,33 +68,18 @@ public function login(LoginRequest $request){
               ], 401);
 
           }
-    $user->generate_otp_code();
+          $user->generate_otp_code();
+    $otp=$user->otp_code;
+    app(\App\Services\UltraMsgService::class)->sendOtp($user->phone, $otp);
 
-//          $message='login otp is '.$user->otp_code;
-//    $response = Http::withBasicAuth(
-//        env('COMMPEAK_USERNAME'),
-//        env('COMMPEAK_PASSWORD')
-//    )->post(env('COMMPEAK_API_URL'), [
-//        'to'   => '+963'.$user->phone,
-//        'from' => env('COMMPEAK_SENDER_ID'),
-//        'text' => $message,
-//    ]);
-//    $response = Http::withHeaders([
-//        'Authorization' => 'Bearer ' . env('COMMPEAK_API_TOKEN'),
-//    ])->post(env('COMMPEAK_API_URL'), [
-//        'to'   => '+963'.$user->phone,
-//        'from' => env('COMMPEAK_SENDER_ID'),
-//        'text' =>$message,
-//    ]);
+
+    return response()->json([
+    'message' => 'please check your whatsapp number '
+]);
 
 
 
 
-
-          $token = auth()->login($user);
-          return response()->json(['user'=>new LoginResource($user),
-              'token' => $token, 'expires_in' => auth()->factory()->getTTL() * 60
-          ]);
 
       }
 

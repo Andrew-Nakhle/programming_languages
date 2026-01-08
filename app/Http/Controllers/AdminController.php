@@ -54,4 +54,23 @@ public function showUsers(){
     }
     return response()->json($users,200);
 }
+public function deleteUser($id){
+    $admin=auth()->user();
+    $user=User::find($id);
+    if(!$user){
+        return response()->json(['error' => 'User not found'], 404);
+    }
+    if ($id==$admin->id){
+        return response()->json([
+            'message'=>'You cannot delete your own account',
+        ],403);
+    }
+    $user->delete();
+    return response()->json([
+        'message' => 'User deleted successfully'
+    ],400);
+}
+
+
+
 }

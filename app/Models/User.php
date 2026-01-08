@@ -44,6 +44,7 @@ return $this->hasMany(Flat::class);
         $this->otp_code=rand(10000,99999);
         $this->otp_expired_at=now()->addMinutes(70);
         $this->save();
+
     }
     protected $fillable = [
         'first_name',

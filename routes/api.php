@@ -1,5 +1,5 @@
 <?php
-
+use  App\Http\Controllers\OtpController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\FlatRatingController;
@@ -41,14 +41,19 @@ Route::group(['middleware'=>['api']],function(){
     Route::patch('approve/{id}',[AdminController::class, 'approveUser'])->middleware('auth:api','admin');
     Route::patch('reject/{id}',[AdminController::class, 'rejectUser'])->middleware('auth:api','admin');
     Route::get('showUsers',[AdminController::class, 'showUsers'])->middleware('auth:api','admin');
+    Route::delete('delete/{id}',[AdminController::class, 'deleteUser'])->middleware('auth:api','admin');
 });
+////////////andrew was here/////////////////////////
 Route::group(['middleware' => ['api']], function () {
     Route::patch('approveReservation/{id}', [ReservationController::class, 'approveReservation'])->middleware('auth:api');
     Route::patch('rejectReservation/{id}', [ReservationController::class, 'rejectReservation'])->middleware('auth:api');
 });
+/////////////andrew was here///////////////////////
 Route::group(['middleware' => ['api']], function () {
     Route::post('addFavorite/{id}',[favoriteController::class, 'addToFavorite'])->middleware('auth:api');
-
     Route::delete('removeFavorite/{id}',[favoriteController::class, 'removeFromFavorite'])->middleware('auth:api');
     Route::get('showFavorite',[favoriteController::class, 'showFavorites'])->middleware('auth:api');
+});
+Route::group(['middleware' => ['api']], function () {
+    Route::post('/otp', [OtpController::class, 'check']);
 });

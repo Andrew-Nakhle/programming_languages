@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('status')->default('pending');//pending/rejected/approved
             $table->string('otp_code')->nullable();
             $table->dateTime('otp_expired_at')->nullable();
+            $table->integer('otp_attempts')->default(0);
 //            $table->boolean('is_approved')->default(false);
             $table->string('gender')->nullable();
             $table->string('country')->nullable();
