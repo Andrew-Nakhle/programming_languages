@@ -68,7 +68,7 @@ $validated['user_id']=auth()->id();
                 'message'=>'this flat does not exist'
             ]);
         }
-return response()->json(['flat'=>new FlatResource($flat),'id'=>$id]);
+return response()->json(new FlatResource($flat));
     }
     //////////////////////////andrew was here/////////////////////////////
     public function deleteFlat($id)

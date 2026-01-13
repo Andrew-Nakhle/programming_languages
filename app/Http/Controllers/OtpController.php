@@ -18,7 +18,7 @@ $user=User::where('phone',$validated['phone'])->first();
 if(!$user){
     return response()->json(['message'=>'Phone number not found'],404);
 }
-    if($user->otp_expired_at<now()->addMinutes(65)){
+    if($user->otp_expired_at<now()->addMinutes(60)){
         return response()->json([
             'message'=>'The code has expired',
         ]);

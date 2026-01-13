@@ -22,7 +22,16 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->is_admin;
     }
-
+public function inComingReservations(){
+        return $this->hasManyThrough(
+            Reservation::class,
+            Flat::class,
+            'user_id',
+            'flat_id',
+            'id',
+            'id'
+        );
+}
     public function flats()
     {
 return $this->hasMany(Flat::class);
@@ -42,7 +51,7 @@ return $this->hasMany(Flat::class);
     public function generate_otp_code(){
         $this->timestamps = false;
         $this->otp_code=rand(10000,99999);
-        $this->otp_expired_at=now()->addMinutes(70);
+        $this->otp_expired_at=now()->addMinutes(65);
         $this->save();
 
     }

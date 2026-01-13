@@ -18,11 +18,29 @@ class ReservationController extends Controller
 {
     public function create(CreateReservationRequest $request)
     {
+        $user=auth()->user();
         $validated = $request->validated();
         $flat = Flat::with('reservations')->find($request['flat_id']);
 //        checkReservationConflict( $flat, null, $validated['start_time'],$validated['end_time']);
-        if ($flat && $flat->status == 'available') {
+        if(!$flat){
+            return response()->json([
+                'message' => 'Flat was not found'
+            ],404);
+        }
+        if($flat->status!='available'){
+            return response()->json([
+                'message' => 'flat is not available because its' . $flat->status,
+
+            ],400);
+        }
+        if ($flat->user_id==$user->id){
+            return response()->json([
+                'message' => 'You cannt reserve your own flat'
+            ]);
+        }
+
             $conflict = $flat->reservations()->
+            where('status','approved')->
             where(function ($query) use ($validated) {
                 $query->wherebetween('start_time', [$validated['start_time'], $validated['end_time']])
                     ->orwherebetween('end_time', [$validated['start_time'], $validated['end_time']])
@@ -36,11 +54,7 @@ class ReservationController extends Controller
                     });
 
             })->exists();
-        } else {
-            return response()->json([
-                'message' => 'flat is not available because its' . $flat->status,
-            ]);
-        }
+
 
         if ($conflict) {
             return response()->json([
@@ -91,6 +105,7 @@ class ReservationController extends Controller
 
         $conflict = $flat->reservations()
             ->where('id', '!=', $reservation->id)->
+                where('status',  'approved')->
             where(function ($query) use ($validated) {
                 $query->wherebetween('start_time', [$validated['start_time'], $validated['end_time']])
                     ->orwherebetween('end_time', [$validated['start_time'], $validated['end_time']])
@@ -137,10 +152,33 @@ class ReservationController extends Controller
         return response()->json(['message'=>'please wait until owner accept your update',
             'reservation' => new ReservationResource($reservation)], 200);
     }
+        public function allReservationsForUserFlats()
+    {
+        ////طريقة اولى باستخدام whereIn تابع pluck بحبلي عمود واحد بس من جدول
+//        $user = auth()->user();
+//
+//        $reservations = Reservation::whereIn('flat_id', $user->flats->pluck('id'))
+//            ->where('status', 'pending')
+//            ->get();
+///////طريقة تانية باسخدام العلاقات
+//        $reservations = Reservation::whereHas('flat', function ($query) {
+//            $query->where('user_id', auth()->id());
+//        })
+//            ->where('status', 'pending')
+//            ->get();
+        $reservation=auth()->user()->inComingReservations()->where('reservations.status','pending')->get();
+            if ($reservation->isEmpty()) {
+                return response()->json([
+                    'message' => 'No reservations found'
+                ]);
+            }
+
+            return response()->json($reservation);
+    }
 
     public function CancelReservation($id)
     {
-        $reservation = Reservation::find($id);
+        $reservation = Reservation::with('flat')->find($id);
         $userId = auth()->id();
 
         if (!$reservation) {
@@ -150,7 +188,7 @@ class ReservationController extends Controller
             ]);
 
         }
-        if ($reservation->user_id !== $userId) {
+        if ($reservation->flat->user_id !== $userId) {
             return response()->json([
                 'message' => 'You do not have the authority to cancel this booking.'
             ]);
@@ -183,13 +221,13 @@ class ReservationController extends Controller
     public function approveReservation($id)
     {
         $userId = auth()->id();
-        $reservation = Reservation::find($id);
+        $reservation = Reservation::with('flat')->find($id);
         if (!$reservation) {
             return response()->json([
                 'message' => 'Reservation not found'
             ], 404);
         }
-        if ($userId != $reservation->user_id) {
+        if ($userId != $reservation->flat->user_id) {
             return response()->json([
                 'message' => 'You do not have the authority to approve this reservation.'
             ], 403);
@@ -202,6 +240,20 @@ class ReservationController extends Controller
 
         $reservation->status = 'approved';
         $reservation->save();
+
+        $conflicts=$reservation->where('flat_id',$reservation->flat_id)
+            ->where('id','!=',$id)
+            ->where(function ($query) use ($reservation) {
+                $query->where('start_time','<',$reservation->end_time)
+                    ->where('end_time','>=',$reservation->start_time);
+            })->get();
+
+        foreach ($conflicts as $coflict){
+$coflict->status='rejected';
+$coflict->save();
+        }
+
+        $reservation->save();
         return response()->json([
             'message' => 'Reservation approved successfully',
             'reservation' => new ReservationResource($reservation)
@@ -211,14 +263,14 @@ class ReservationController extends Controller
     public function rejectReservation($id)
     {
         $userId = auth()->id();
-        $reservation = Reservation::find($id);
+        $reservation = Reservation::with('flat')->find($id);
         if (!$reservation) {
             return response()->json([
                 'message' => 'Reservation not found'
             ], 404);
 
         }
-        if ($userId != $reservation->user_id) {
+        if ($userId != $reservation->flat->user_id) {
             return response()->json([
                 'message' => 'You do not have the authority to reject this reservation.'
             ], 403);
